@@ -4,6 +4,7 @@ pipeline {
         stage('Msg') {
             steps {
                 echo 'Hello Hussein'
+                echo 'ya bomboooo'
             }
         }
     }
