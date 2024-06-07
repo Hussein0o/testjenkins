@@ -1,30 +1,25 @@
-from flask import Flask, request, jsonify,render_template,redirect, jsonify
+import os
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import requests
 
 app = Flask(__name__)
 CORS(app)
-here=""
+
+backend_service_host = os.getenv('BACKEND_SERVICE_HOST', 'backend-service')
+
 @app.route('/')
 def form():
     return render_template('form.html')
 
-@app.route("/addrec", methods=['GET','POST'])
+@app.route("/addrec", methods=['POST'])
 def addrec():
-	if request.method == 'POST':
-		Id = request.form['Id']
-		nm = request.form['nm']
-		nm1 = request.form['nm1']
-		print(request.form)
-		here=request.form
-		print(type(here))
-		print(dict(here))
-		requests.post('http://172.22.0.3:5000/test',json=dict(here))
-		print("id=",Id)
-		print('nm=',nm)
-		print('nm1=',nm1)
-	print("nothing/n")
-	return jsonify(here),200
+    try:
+        data = request.form.to_dict()
+        response = requests.post(f'http://{backend_service_host}:5000/test', json=data)
+        return jsonify(response.json()), response.status_code
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(debug= True,port=5001,host="0.0.0.0")
+    app.run(debug=True, port=5001, host="0.0.0.0")
