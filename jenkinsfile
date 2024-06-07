@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('docker-hub-credentials')
+    }
+    stages {
+        stage('Build') {
+            steps {
+                script {
+                    docker.build('my-app/frontend', './frontend')
+                    docker.build('my-app/backend', './backend')
+                }
+            }
+        }
+        stage('Push') {
+            steps {
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', 'DOCKERHUB_CREDENTIALS') {
+                        docker.image('my-app/frontend').push('latest')
+                        docker.image('my-app/backend').push('latest')
+                    }
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                script {
+                    sh 'kubectl apply -f k8s/'
+                }
+            }
+        }
+    }
+}
+
