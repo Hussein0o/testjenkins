@@ -5,10 +5,10 @@ from flask_mysqldb import MySQL
 
 app = Flask(__name__)
 
-app.config['MYSQL_HOST']='172.22.0.2'
-app.config['MYSQL_USER']='root'
-app.config["MYSQL_PASSWORD"]=''
-app.config["MYSQL_DB"]='flaskapp'
+app.config['MYSQL_HOST']=os.getenv('MYSQL_HOST', 'mysql')
+app.config['MYSQL_USER']=os.getenv('MYSQL_USER', 'root')
+app.config["MYSQL_PASSWORD"]=os.getenv('MYSQL_PASSWORD', '')
+app.config["MYSQL_DB"]=os.getenv('MYSQL_DB', 'flaskapp')
 
 mysql=MySQL(app)
 CORS(app)
